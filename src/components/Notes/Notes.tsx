@@ -76,6 +76,22 @@ function Notes() {
     );
   };
 
+  const onDragStart = (e: any, index: number) => {
+    e.dataTransfer.setData("index", index);
+  };
+
+  const onDragOver = (e: any) => {
+    e.preventDefault();
+  };
+
+  const onDrop = (e: any, targetIndex: number) => {
+    const sourceIndex = e.dataTransfer.getData("index");
+    const newList = [...notes];
+    const [removed] = newList.splice(sourceIndex, 1);
+    newList.splice(targetIndex, 0, removed);
+    setNotes(newList);
+  };
+
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
@@ -98,6 +114,10 @@ function Notes() {
               key={index}
               onClick={() => setSelectedNote(index)}
               style={{ backgroundColor: note.favorite ? "#333" : "" }}
+              draggable
+              onDragStart={(e) => onDragStart(e, index)}
+              onDragOver={(e) => onDragOver(e)}
+              onDrop={(e) => onDrop(e, index)}
             >
               {note.title || "No Title"}
             </li>
